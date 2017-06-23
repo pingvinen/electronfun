@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <title>Electron FUN</title>
+    <link rel="stylesheet" href="editablegrid-release-2.0.1/editablegrid.css">
   </head>
   <body>
     <h1>Electron FUN!</h1>
@@ -12,12 +13,20 @@
 
     <div id="holder">Drag your file here</div>
     <button onclick="pickAndLoadFile()">Load csv file</button>
-    <textarea id="fileOutput"></textarea>
+    
+    <div id="tablecontent"></div>
 
+    <script src="editablegrid-release-2.0.1/editablegrid.js"/></script>
+    <script src="editablegrid-release-2.0.1/editablegrid_utils.js"/></script>
+    <script src="editablegrid-release-2.0.1/editablegrid_editors.js"/></script>
+    <script src="editablegrid-release-2.0.1/editablegrid_renderers.js"/></script>
+    <script src="editablegrid-release-2.0.1/editablegrid_validators.js"/></script>
     <script>
         const {dialog} = require('electron').remote;
         const fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
+        const CSV = require('csv-string');
         const holder = document.getElementById('holder');
+        const table = document.getElementById('tablecontent');
 
         holder.ondragover = () => {
             return false;
@@ -77,9 +86,49 @@
                     return;
                 }
 
-                document.getElementById('fileOutput').value = data;
+                // document.getElementById('fileOutput').value = data;
+
+                populateTable(parseFileContent(data));
             })
         }
+
+        function parseFileContent(fileContent) {
+            return CSV.parse(fileContent);
+        }
+
+        function populateTable(dataArray) {
+            const data = [];
+            const metadata = [];
+
+            const headers = dataArray.shift();
+
+            dataArray.map((x, i) => {
+                data.push({ id: i, values: headersAndRowToObject(headers, x)});
+            });
+
+            headers.map((x) => {
+                metadata.push({ name: x, label: x, datatype: "string", editable: true });
+            });
+
+            console.log(dataArray);
+            console.log(metadata);
+            console.log(data);
+
+            const grid = new EditableGrid("alalala");
+            grid.load({metadata, data});
+            grid.renderGrid('tablecontent', 'testgrid');
+        }
+
+        function headersAndRowToObject(headers, row) {
+            const obj = {};
+
+            headers.forEach((elm, i) => {
+                obj[elm] = row[i];
+            });
+
+            return obj;
+        }
+        
     </script>
   </body>
 </html>
