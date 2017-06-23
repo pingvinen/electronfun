@@ -10,14 +10,50 @@
     Chrome <script>document.write(process.versions.chrome)</script>,
     and Electron <script>document.write(process.versions.electron)</script>.
 
-    <button onclick="loadFile()">Load csv file</button>
+    <div id="holder">Drag your file here</div>
+    <button onclick="pickAndLoadFile()">Load csv file</button>
     <textarea id="fileOutput"></textarea>
 
     <script>
         const {dialog} = require('electron').remote;
         const fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
+        const holder = document.getElementById('holder');
 
-        function loadFile() {
+        holder.ondragover = () => {
+            return false;
+        };
+
+        holder.ondragleave = () => {
+            return false;
+        };
+
+        holder.ondrop = (e) => {
+            e.preventDefault();
+            if (e.dataTransfer.files.length > 1) {
+                alert('only 1 file at a time');
+                return;
+            }
+
+            const file = e.dataTransfer.files[0];
+            console.log(file);
+
+            if (file.type === 'text/csv') {
+
+            }
+
+            switch (file.type) {
+                case 'text/csv':
+                case 'text/plain':
+                    return loadFile(file.path);
+                
+                default:
+                    alert('Not a csv file');
+                    return;
+            }
+        }
+
+
+        function pickAndLoadFile() {
             const paths = dialog.showOpenDialog({
                 properties: ['openFile'],
                 title: 'Select your csv file',
@@ -31,7 +67,11 @@
                 return;
             }
 
-            fs.readFile(paths[0], 'utf-8', (err, data) => {
+            loadFile(paths[0]);
+        }
+
+        function loadFile(path) {
+            fs.readFile(path, 'utf-8', (err, data) => {
                 if (err) {
                     alert(err.message);
                     return;
