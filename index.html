@@ -10,7 +10,7 @@
     Chrome <script>document.write(process.versions.chrome)</script>,
     and Electron <script>document.write(process.versions.electron)</script>.
 
-    <button onclick="loadFile()">Load file</button>
+    <button onclick="loadFile()">Load csv file</button>
     <textarea id="fileOutput"></textarea>
 
     <script>
@@ -18,7 +18,13 @@
         const fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
 
         function loadFile() {
-            const paths = dialog.showOpenDialog({properties: ['openFile']});
+            const paths = dialog.showOpenDialog({
+                properties: ['openFile'],
+                title: 'Select your csv file',
+                filters: [
+                    { name: 'CSV', extensions: ['csv'] }
+                ]
+            });
             
             if (paths ===undefined) {
                 console.log('no files selected');
