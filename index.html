@@ -16,6 +16,8 @@
     
     <div id="tablecontent"></div>
 
+    <button onclick="save()">Save file</button>
+
     <script src="editablegrid-release-2.0.1/editablegrid.js"/></script>
     <script src="editablegrid-release-2.0.1/editablegrid_utils.js"/></script>
     <script src="editablegrid-release-2.0.1/editablegrid_editors.js"/></script>
@@ -26,7 +28,7 @@
         const fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
         const CSV = require('csv-string');
         const holder = document.getElementById('holder');
-        const table = document.getElementById('tablecontent');
+        let grid = null;
 
         holder.ondragover = () => {
             return false;
@@ -114,7 +116,7 @@
             console.log(metadata);
             console.log(data);
 
-            const grid = new EditableGrid("alalala");
+            grid = new EditableGrid("alalala");
             grid.load({metadata, data});
             grid.renderGrid('tablecontent', 'testgrid');
         }
@@ -127,6 +129,38 @@
             });
 
             return obj;
+        }
+
+        function save() {
+            if (grid === null) {
+                alert('nothing to save yet');
+                return;
+            }
+            
+            const rows = [];
+
+            const headers = [];
+            for (let i=0; i<grid.getColumnCount(); i++) {
+                headers.push(grid.getColumn(i).name);
+            }
+
+            rows.push(headers);
+
+            for (let i=0; i<grid.getRowCount(); i++) {
+                rows.push(Object.values(grid.getRowValues(i)));
+            }
+
+            const theCsv = CSV.stringify(rows);
+            console.log(theCsv);
+
+            fs.writeFile('/tmp/yay', theCsv, (err) => {
+                if (err) {
+                    alert(err.message);
+                    return;
+                }
+
+                console.log('saved in /tmp/yay');
+            });
         }
         
     </script>
