@@ -8,7 +8,7 @@ let win;
 
 function createWindow() {
     // create the browser window
-    win = new BrowserWindow({width: 800, height: 600});
+    win = new BrowserWindow({width: 1024, height: 900});
 
     // and load the index.html of the app
     win.loadURL(url.format({
@@ -18,7 +18,7 @@ function createWindow() {
     }));
 
     // open the devtools
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
 
     // emitted when the window is closed
     win.on('closed', () => {
@@ -50,3 +50,4 @@ app.on('activate', () => {
         createWindow();
     }
 });
+

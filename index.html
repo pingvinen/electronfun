@@ -2,12 +2,38 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <title>Electron FUN</title>
   </head>
   <body>
-    <h1>Hello World!</h1>
+    <h1>Electron FUN!</h1>
     We are using node <script>document.write(process.versions.node)</script>,
     Chrome <script>document.write(process.versions.chrome)</script>,
     and Electron <script>document.write(process.versions.electron)</script>.
+
+    <button onclick="loadFile()">Load file</button>
+    <textarea id="fileOutput"></textarea>
+
+    <script>
+        const {dialog} = require('electron').remote;
+        const fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
+
+        function loadFile() {
+            const paths = dialog.showOpenDialog({properties: ['openFile']});
+            
+            if (paths ===undefined) {
+                console.log('no files selected');
+                return;
+            }
+
+            fs.readFile(paths[0], 'utf-8', (err, data) => {
+                if (err) {
+                    alert(err.message);
+                    return;
+                }
+
+                document.getElementById('fileOutput').value = data;
+            })
+        }
+    </script>
   </body>
 </html>
